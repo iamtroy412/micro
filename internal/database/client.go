@@ -18,7 +18,7 @@ type Client struct {
 }
 
 func NewDatabaseClient() (DatabseClient, error) {
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dmbname=%s port=%d sslmode=%s",
+	dsn := fmt.Sprintf("host=%s user=%s password=%s database=%s port=%d sslmode=%s",
 		"localhost",
 		"postgres",
 		"postgres",
