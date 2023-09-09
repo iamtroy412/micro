@@ -5,11 +5,14 @@ import (
 	"net/http"
 
 	"github.com/iamtroy412/micro/internal/database"
+	"github.com/iamtroy412/micro/internal/models"
 	"github.com/labstack/echo/v4"
 )
 
 type Server interface {
     Start() error
+    Readiness(ctx echo.Context) error
+    Liveness(ctx echo.Context) error
 }
 
 type EchoServer struct {
@@ -35,5 +38,18 @@ func (s *EchoServer) Start() error {
 }
 
 func (s *EchoServer) registerRoutes() {
+    s.echo.GET("/readiness", s.Readiness)
+    s.echo.GET("/liveness", s.Liveness)
+}
 
+func (s *EchoServer) Readiness(ctx echo.Context) error {
+    ready := s.DB.Ready()
+    if ready {
+        return ctx.JSON(http.StatusOK, models.Health{Status: "OK"})
+    }
+    return ctx.JSON(http.StatusInternalServerError, models.Health{Status: "Failure"})
+}
+
+func (s *EchoServer) Liveness(ctx echo.Context) error {
+    return ctx.JSON(http.StatusOK, models.Health{Status: "OK"})
 }
